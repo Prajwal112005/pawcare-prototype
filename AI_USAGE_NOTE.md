@@ -1,67 +1,73 @@
-# AI Usage Note: Engineering Decisions & LLM Collaboration
+AI Usage Note: Engineering Decisions & LLM Collaboration
 
-> **Internship Assignment**: AI Full-Stack Developer Intern — Thinking & Building Challenge  
-> **Candidate / Developer Reflection**
+Internship Assignment: AI Full-Stack Developer Intern — Thinking & Building Challenge
 
----
+Candidate / Developer Reflection
 
-## 1. Which AI Coding Tools Were Used
+1. Which AI Coding Tools Were Used
+In building this prototype, I used AI as a development and reasoning partner rather than as a replacement for engineering decisions.
+Google Antigravity / Gemini: Used as an interactive architectural pairing partner, code-generation assistant, and debugging aid while developing the full-stack prototype.
+Google Gemini 1.5 Flash REST API (In-App): Integrated server-side into the /api/clarify and /api/learn routes for natural-language query deconstruction and qualitative research synthesis.
 
-In building this prototype, the following AI tooling was utilized:
-- **Google Antigravity / Gemini 3.8 Flash**: Employed as an interactive architectural pairing partner, code synthesizer, and debugger for rapid full-stack scaffolding.
-- **Google Gemini 1.5 Flash REST API (In-App)**: Integrated into the backend API routes (`/api/clarify` and `/api/learn`) to perform natural-language query deconstruction and qualitative research synthesis.
+2. What AI Helped With
+   1. Scaffolding the Next.js Application
+AI helped accelerate the creation of the Next.js application structure, typed API route handlers, React components, and styling.
+This allowed me to spend more time deciding what the system should do rather than manually writing repetitive boilerplate.
+   2. Generating the Historical Sample Dataset
+AI was used to help create the project's historical sample dataset representing NIFTY 50 daily OHLC data for the prototype's 2018–2024 testing period.
+I treated this as prototype/sample research data rather than production-grade market data, and the application explicitly communicates that limitation.
+   3. Designing Structured LLM Prompts
+AI assistance was also used to design prompts for the CLARIFY and LEARN stages.
+The prompts were structured so that the system separates:
+Data / Facts → Interpretation → Caveats → Conclusion
+This prevents the qualitative AI layer from presenting an interpretation as if it were directly observed evidence.
+3. Key Decisions Made by Me
+   1. Strictly Isolating Mathematical Calculations from the LLM
+Decision: The LLM is never responsible for calculating backtest returns, win rates, drawdowns, or equity values.
+All quantitative calculations are performed deterministically in TypeScript through lib/backtest.ts.
+Rationale: Financial calculations need to be reproducible and testable. An LLM should not be treated as the source of truth for numerical backtesting.
+   2. Mandatory Offline / Zero-Key Fallback
+Decision: The application remains functional even when no Gemini API key is configured.
+I implemented deterministic fallback logic in the clarification and learning layers so the core research workflow does not completely fail when an API key is unavailable.
+Rationale: An AI prototype should degrade gracefully rather than becoming unusable when an external model or API quota is unavailable.
+   3. Anti-Look-Ahead Execution
+Decision: The default experiment generates the signal using the current day's closing data but executes the position at the next trading day's open (T+1).
+The interface also warns the user if they choose same-close execution.
+Rationale: I wanted to explicitly address look-ahead bias rather than allowing the backtest to use information that would not have been available at the time of execution.
+   4. Epistemological Guardrails in the LEARN Stage
+Decision: The system should not make an unsupported statement such as “this strategy is profitable” simply because the backtest produces a positive metric.
+Instead, the LEARN stage separates:
+What the data shows
+System interpretation
+Caveats
+Pragmatic conclusion
+Recommended follow-up investigations
+Rationale: A small historical experiment can generate an interesting result without proving that a strategy will continue to work. The system should communicate that distinction explicitly.
+4. What Suggestions Were Rejected or Modified
+   1. Rejected: Client-Side Direct LLM Calls
+Suggestion: Call the LLM API directly from React components in the browser.
+Rejected because: This could expose the API key to the client. I instead routed model requests through Next.js server-side API routes and kept the API key in server environment variables.
+   2. Rejected: Heavyweight Charting Dependencies
+Suggestion: Use a large external charting library for the equity curve.
+Rejected because: The prototype only required a simple research visualization. I chose a lightweight SVG-based equity curve instead, reducing dependencies and keeping the implementation easier to control.
+   3. Modified: Overlapping Position Handling
+Initial approach: Allow multiple simultaneous positions when several qualifying drop signals occur close together.
+Modification: The experiment uses a single non-overlapping position allocation.
+Reason: This creates a simpler and more interpretable prototype and avoids implicitly assuming unlimited capital or leverage.
+5. What Part of the Implementation I Am Most Proud Of
+The 3-Tier Ambiguity Decomposition in Stage 2 — CLARIFY
+The part I am most proud of is not a particular UI component or line of code. It is the decision to make ambiguity itself a first-class part of the product.
+A question such as:
+“Does buying NIFTY after a sharp fall work?”
+sounds specific to a human, but it leaves several critical variables undefined.
+Instead of silently choosing them, NIFTY AlphaLab separates the question into:
+User Stated
+System Assumptions
+Needs Clarification
+The proposed assumptions—drop percentage, drop timeframe, execution timing, holding period, and trading friction—are made visible and editable before the experiment is run.
 
----
+This reflects the core philosophy of the project:
 
-## 2. What AI Helped With
+Build less. Think more.
 
-1. **Scaffolding the Next.js App Router Architecture**:
-   - Accelerating the boilerplate creation for typed API route handlers (`/api/clarify`, `/api/backtest`, `/api/learn`), Next.js components, and Tailwind styling.
-2. **Generating Realistic NIFTY Historical OHLC Data**:
-   - Synthesizing a high-fidelity 1,576-bar daily dataset for NIFTY 50 (2018–2024) that faithfully reproduces historical volatility milestones, including the IL&FS crisis (2018), corporate tax cut surge (2019), COVID crash and circuit breakers (March 2020), second wave (2021), and the Ukraine invasion selloff (2022).
-3. **Structured Prompt Design for Financial Epistemology**:
-   - Crafting system prompts that instruct the LLM to format responses into strict JSON adhering to the **Data (Facts) → Interpretation → Caveats → Conclusion** hierarchy.
-
----
-
-## 3. Key Decisions Made by Me (The Developer)
-
-1. **Strictly Isolating Math from the LLM**:
-   - *Decision*: The LLM is **never** permitted to calculate backtest returns, win rates, median returns, drawdowns, or equity values. All math is executed deterministically in pure TypeScript (`lib/backtest.ts`).
-   - *Rationale*: LLMs are probabilistic token predictors prone to mathematical hallucination and calculation errors. In quantitative finance, arithmetic must be 100% deterministic, testable, and reproducible.
-2. **Mandatory Offline / Zero-Key Fallback Mode**:
-   - *Decision*: Architect the application so it is 100% functional without an API key.
-   - *Rationale*: A common flaw in AI prototypes is becoming completely broken when an API key is missing or quota is exhausted. I built local deterministic fallback engines in `lib/clarify.ts` and `lib/learn.ts` that execute instant heuristic parsing and template synthesis if `GEMINI_API_KEY` is not present.
-3. **Strict Enforcement of Anti-Lookahead Execution ($T+1$ Open)**:
-   - *Decision*: Enforce execution at the Next Trading Day Market Open rather than the Signal Day Close, and add an explicit visual warning banner if a user selects the Same Day Close.
-   - *Rationale*: Look-ahead bias is the most prevalent flaw in novice trading backtests. Addressing it transparently demonstrates genuine domain knowledge.
-4. **Epistemological Guardrails in the LEARN Stage**:
-   - *Decision*: Forbid exaggerated claims like "this strategy is profitable."
-   - *Rationale*: Even though the default backtest showed a 71.4% win rate, the cumulative return was -0.01% due to cash drag and tail losses (-9.45%). The system must teach the user that high win rate $\ne$ profitability.
-
----
-
-## 4. What Suggestions Were Rejected or Modified
-
-1. **Rejected: Client-Side Direct LLM Calls**:
-   - *Suggestion*: Call the LLM API directly from the React components in the browser.
-   - *Rejected Because*: This exposes API secrets to client inspection. All AI requests were routed through Next.js server-side route handlers (`app/api/*`) utilizing server environment variables.
-2. **Rejected: Complex Heavyweight Charting Libraries (Chart.js / TradingView Lightweight)**:
-   - *Suggestion*: Install a 5MB charting dependency.
-   - *Rejected Because*: A bespoke, zero-dependency SVG equity curve component provides instant load times, zero external runtime fragility, full dark-mode styling control, and zero bundle bloat.
-3. **Modified: Overlapping Position Handling**:
-   - *Initial Idea*: Allow multiple simultaneous positions on consecutive drop days.
-   - *Modification*: Enforce single non-overlapping position allocation with cash tracking. This mimics a realistic retail portfolio with fixed capital rather than unrealistic infinite margin.
-
----
-
-## 5. What Part of the Implementation I am Most Proud Of
-
-### The 3-Tier Ambiguity Decomposition in Stage 2 (CLARIFY)
-Most AI applications make the critical mistake of **silently making assumptions** for the user. When a user asks a vague question, the system quietly picks arbitrary parameters and presents the output as ground truth.
-
-In NIFTY AlphaLab, the centerpiece of the application is the **interactive parameter deconstruction**:
-- It explicitly tells the user: *"Here is what you said; here is what you didn't say; and here are the assumptions we propose."*
-- Every single assumption—drop percentage, drop timeframe, execution timing, holding period, and transaction fees—is presented transparently and remains editable.
-
-This embodies the core philosophy: **Build less. Think more.**
+The goal was not simply to build an AI application that produces an answer. It was to build a system that makes the user define the question properly before trusting the answer.
