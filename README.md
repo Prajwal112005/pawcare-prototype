@@ -1,256 +1,187 @@
-NIFTY AlphaLab: AI-Native Quantitative Research Prototype
+# PawCare — Animal Care Discovery & Medical Intelligence Platform
+> **Practo for Animals — Product & Technology Intern Screening Assignment**
 
-AI Full-Stack Developer Intern — Thinking & Building Challenge
+PawCare is an animal-care discovery and medical intelligence MVP built for India's veterinary ecosystem, starting with **Bengaluru**. It bridges the information fragmentation between pet parents, street animal rescuers, veterinary specialists, and emergency care providers.
 
-Journey: ASK → CLARIFY → DEFINE → TEST → LEARN
+---
 
-Core Research Question: "Does buying NIFTY after a sharp fall work?"
+## 🐾 Live Interactive Screens
 
-1. Project Overview
-NIFTY AlphaLab is an AI-native quantitative research prototype designed to explore ambiguous market ideas through a structured and reproducible research workflow.
-A question such as:
-"Does buying NIFTY after a sharp fall work?"
-sounds simple, but it leaves several important variables undefined:
-What constitutes a "sharp fall"?
-Is the fall measured over one trading day or several?
-When should the trade execute?
-How long should the position be held?
-What transaction costs and slippage should be considered?
-What does "work" actually mean?
-Instead of silently choosing these parameters, NIFTY AlphaLab makes the ambiguity explicit and guides the user through:
-ASK → CLARIFY → DEFINE → TEST → LEARN
-The goal is not to automatically produce a trading recommendation. The goal is to make the research question precise enough to test and communicate the limitations of the resulting evidence.
+The application features **4 seamlessly connected core screens** with continuous state persistence, interactive filters, simulated AI extraction pipelines, and zero dead-ends:
 
-2. The 5-Stage Research Journey
-┌─────────┐      ┌─────────────┐      ┌────────────┐      ┌──────────┐      ┌───────────┐
-│ 1. ASK  │ ───► │ 2. CLARIFY  │ ───► │ 3. DEFINE  │ ───► │ 4. TEST  │ ───► │ 5. LEARN  │
-└─────────┘      └─────────────┘      └────────────┘      └──────────┘      └───────────┘
-Natural Lang      Ambiguity          Structured           Deterministic     Data →
-Query             Decomposition      Experiment           TypeScript        Interpretation
-                                     Definition            Backtest          → Caveats
-                                                                                → Conclusion
-  Stage 1: ASK — Natural Language Ingestion
-The user enters a natural-language research question.
-A pre-filled example is provided:
-"Does buying NIFTY after a sharp fall work?"
-The interface explains why natural-language financial questions often contain hidden assumptions.
-  Stage 2: CLARIFY — Ambiguity Deconstruction
-The system separates the question into three tiers:
-User Said
-Explicit information extracted from the question.
-Example: NIFTY 50, Buy, "sharp fall".
-System Assumptions
-Proposed quantitative baseline parameters.
-Example: 3% single-day decline, 5-day holding period, next-day-open execution, and 0.20% round-trip friction.
-Needs Clarification
-Variables that can materially change the experiment:
-Magnitude: 2%, 3%, or 5%
-Timeframe: 1 trading day or 3 trading days
-Execution: Next Day Open or Same Close
-Holding Horizon: 3, 5, 10, or 20 trading days
-Transaction Costs / Slippage: configurable
-The important design principle is that these assumptions are visible and editable rather than silently imposed.
-  Stage 3: DEFINE — Formal Experiment Specification
-The clarified parameters are converted into a structured experiment card.
-The default experiment uses:
-Market Data: NIFTY 50 historical index data
-Signal: ≥3% single-day close-to-close decline
-Entry: Next trading day open (T+1)
-Holding Period: 5 trading days
-Position: Long, single non-overlapping position
-Transaction Costs / Slippage: Configurable
-Test Period: 2018-01-01 to 2024-01-15
-The hypothesis is explicitly represented as a testable statement rather than treated as an established fact.
-Every major assumption remains editable before testing.
-  Stage 4: TEST — Deterministic Backtesting Engine
-The backtest is implemented in pure TypeScript.
-The execution sequence is:
-Signal: A closing-price decline on Day T satisfies the configured threshold.
-Entry: The position is entered at the next trading day's open (T+1).
-Exit: The position is exited after the selected holding period.
-Friction: Configured transaction costs and slippage are incorporated into the calculation.
-The engine calculates:
-Total signals
-Executed non-overlapping trades
-Win rate
-Average and median return per trade
-Best and worst trade
-Profit factor
-Maximum drawdown
-Strategy cumulative return
-Buy-and-hold benchmark return
-Visualizations
-SVG equity curve comparing strategy performance with a buy-and-hold benchmark.
-Chronological trade log.
-Trade filtering by all trades, winning trades, and losing trades.
-Paginated trade results.
-  Stage 5: LEARN — Research Synthesis
-The LEARN stage separates observed results from interpretation.
-It presents:
-What the Data Shows
-Direct findings produced by the deterministic backtest.
-System Interpretation
-Possible explanations and behavioral interpretations.
-Caveats & Limitations
-Sample size
-Market-regime dependency
-Slippage and transaction costs
-Tail risk
-Lack of stop-loss modelling
-Limitations of the prototype dataset
-Pragmatic Conclusion
-A cautious interpretation of what the experiment does and does not establish.
-Recommended Next Investigations
-Threshold sensitivity
-Holding-period sensitivity
-Trend/regime filters
-Consecutive down-day conditions
-Stop-loss experiments
-Larger or out-of-sample datasets
+1. **Screen 1: Home / Discovery**
+   - **Hyperlocal Location Selector**: Bengaluru area hub (Indiranagar, Koramangala, Whitefield, HSR Layout, Jayanagar, Hebbal, Jakkur).
+   - **Smart Natural Language Search Bar**: "What does your pet need?" with interactive prompt chips (e.g., *"Stray dog hit by car bleeding heavily"*, *"Puppy vaccination and deworming"*, *"Cat-only clinic with kidney blood tests"*).
+   - **Emergency 24x7 SOS Banner**: Immediate 1-tap casualty dispatch for trauma, accident cases, and oxygen-equipped ambulances.
+   - **4 Category Quick Shortcuts**: Veterinary Clinics, 24/7 Emergency & ICU, NGOs & Rescuers, Boarding & Foster Care.
+   - **Recommended Care Preview**: Vetted Bengaluru clinics with live distance badges, ratings, and open status.
+   - **AI Medical Assistant Spotlight**: Direct launcher for pet parents to simplify reports.
 
-3. Tech Stack
-Framework: Next.js 14 (App Router)
-Language: TypeScript (Strict Mode)
-Styling: Tailwind CSS
-Icons: Lucide React
-Data Engine: Deterministic TypeScript calculations and CSV parsing
-AI Integration: Google Gemini 1.5 Flash via server-side REST API with deterministic offline fallback
+2. **Screen 2: Search Results & Interactive Bengaluru Map**
+   - **Multi-Parameter Filter Toolbar**:
+     - **Open Now** toggle
+     - **24/7 Emergency Casualty** toggle
+     - **Service Category tabs** (All, Vet Clinics, 24x7 Emergency, NGOs/Rescuers, Boarding)
+     - **Distance slider** (< 5 km, < 10 km, < 15 km, All)
+     - **Rating filter** (4.5+, 4.0+, All)
+     - **Sorting**: Recommended, Nearest Distance, Highest Rating
+   - **View Switcher**: Clean list view vs. **Split Map & List View** with an interactive stylized Bengaluru coordinate map featuring clickable provider pins and instant profile previews.
+   - **Rich Provider Cards**: Verification badge (`PawCare Verified Demo`), 24/7 emergency indicators, distance in km, rating with review counts, operating hours, capability chips, and direct action triggers.
 
-4. Architecture & Key Modules
-├── app/
-│   ├── api/
-│   │   ├── backtest/route.ts   # Deterministic server-side backtest runner
-│   │   ├── clarify/route.ts    # AI prompt deconstruction + heuristic fallback
-│   │   └── learn/route.ts      # Structured report synthesis + heuristic fallback
-│   ├── globals.css             # Application styling
-│   ├── layout.tsx              # Root HTML wrapper and metadata
-│   └── page.tsx                # Main client-side state orchestrator
-│
-├── components/
-│   ├── StepIndicator.tsx       # 5-stage progress tracker
-│   ├── QuestionInput.tsx       # Stage 1: Research question input
-│   ├── ClarifyPanel.tsx        # Stage 2: Ambiguity decomposition
-│   ├── ExperimentCard.tsx      # Stage 3: Editable experiment definition
-│   └── ResultsPanel.tsx        # Stages 4 & 5: Results and research synthesis
-│
-├── lib/
-│   ├── types.ts                # Domain models and configuration types
-│   ├── data.ts                 # Server-side CSV loader and parser
-│   ├── backtest.ts             # Deterministic backtesting engine
-│   ├── clarify.ts              # Natural-language heuristics and ambiguity mapping
-│   └── learn.ts                # Analytical report synthesis
-│
-├── data/
-│   └── nifty_sample.csv        # Historical sample daily OHLC data
-│
-├── scripts/
-│   ├── generate_data.py        # Dataset generation utility
-│   └── test_engine.ts          # Automated engine verification tests
-│
-├── .env.example                # Optional GEMINI_API_KEY configuration
-├── THINKING_NOTE.md            # Research reasoning and ambiguity analysis
-└── AI_USAGE_NOTE.md            # AI collaboration and engineering decisions
+3. **Screen 3: Provider Profile & Action Hub**
+   - **Comprehensive Facility Profile**: Verified badges, exact Bengaluru address, operating hours breakdown, indicative pricing guidelines.
+   - **Direct Actions**:
+     - **Call Clinic Modal**: Direct telephone numbers for OPD, 24/7 emergency casualty line, and WhatsApp quick chat.
+     - **Get Directions**: Links directly to Google Maps navigation coordinates.
+     - **Interactive Booking / Rescuer Assistance Modal**: Select pet species, requested service, date, time slot, contact number, with immediate confirmation reference toast.
+   - **Medical Team & Infrastructure**: Attending veterinary surgeons, specialized equipment (oxygen cages, ultrasound, ICU).
+   - **"AI Care Assistant for this Visit" Section**: Direct bridge to Screen 4 pre-configured for the attending veterinarian.
 
-5. How AI Is Used
-Appropriate AI Responsibilities
-AI is used for:
-Natural-language query interpretation
-Identifying ambiguous financial terms
-Extracting entities and user intent
-Generating qualitative explanations
-Synthesizing caveats and follow-up research questions
-Strict Boundary: AI Does Not Perform the Backtest Math
-The LLM does not calculate:
-Returns
-Win rates
-Drawdowns
-Equity values
-Trade-level performance
-These calculations are performed deterministically by the TypeScript backtesting engine.
-This separation ensures that quantitative results come from reproducible program logic rather than generated text.
-Offline / Zero-Key Fallback
-The application does not require a Gemini API key to run.
-When GEMINI_API_KEY is unavailable, deterministic fallback logic in the clarification and learning layers allows the core workflow to continue functioning.
+4. **Screen 4: AI Medical Report & Prescription Assistant**
+   - **File Upload Zone**: Drag-and-drop or file picker for PDF / JPG / PNG reports.
+   - **3 Pre-Loaded Diagnostic Samples** for instant 1-click evaluator testing:
+     1. *Max (Golden Retriever) — Complete Blood Count (CBC) Panel* (Low platelets 68k, high WBC, suspected tick fever).
+     2. *Bella (Indie Rescue Dog) — Post-Surgery Spay Discharge & Meds* (Antibiotics, Meloxicam pain management, Elizabethan collar).
+     3. *Oliver (Persian Cat) — Senior Feline Renal & Biochemistry Panel* (Elevated BUN & Creatinine, IRIS Stage 2).
+   - **Simulated Multi-Stage AI Pipeline Animation**:
+     1. Multimodal OCR & Document Layout Analysis
+     2. Clinical Terminology De-jargonization
+     3. Medication Timing & Dietary Guardrails
+     4. Veterinarian Question Synthesis
+   - **Prominent Medical Safety Notice**:
+     > *“⚠️ This is an AI-generated explanation, not a diagnosis. Always consult a qualified veterinarian for medical decisions.”*
+   - **Empathetic Layman Summary**: Explains findings clearly without complex medical jargon.
+   - **Biomarkers Table**: Normal vs. abnormal parameters with status badges (`Critical`, `Elevated`, `Normal`, `Low`) and plain-English meanings.
+   - **Structured Medication Schedule**: Medicine name, dosage, frequency, instructions, and therapeutic purpose.
+   - **Vet Care Recommendations & Red Flags**: Warning signs requiring immediate hospital visits.
+   - **Vet Question Generator**: High-leverage questions categorized into Diagnosis, Medication, Diet & Care, and Follow-up, with **1-Click Copy to Clipboard** and **WhatsApp Share formatting**.
 
-6. Anti-Look-Ahead Design
-The experiment uses the closing price of Day T to generate the signal and enters at the next trading day's open (T+1).
-Conceptually:
-Day T Close
-    │
-    │  Signal evaluated
-    ▼
-Day T+1 Open
-    │
-    │  Position entered
-    ▼
-Holding Period
-    │
-    ▼
-Exit
-This prevents the default experiment from assuming that the strategy can enter using a closing price that was only known after the signal-generating session.
-The application also displays a warning when same-close execution is selected because that configuration can introduce look-ahead bias.
+---
 
-7. Dataset Information
-Asset: NIFTY 50 Index
-Data Type: Historical sample daily OHLC data
-Test Period: 2018-01-01 to 2024-01-15
-Bars: 1,576 daily observations
-Important Disclosure
-The dataset is used as a historical sample dataset for prototype validation. It is not a live market feed and the application is not intended to provide production trading signals.
-The experiment should therefore be interpreted as a research prototype rather than a production-grade financial backtesting system.
+## 🤖 4 AI-Powered Workflows Demonstrated
 
-8. How to Run Locally
-Prerequisites
-Node.js 18+
-npm 9+
-Quick Start
-# 1. Clone the repository
-git clone https://github.com/Prajwal112005/nifty-alphalab.git
+### 1. Medical Report Simplification
+- **Data Processed**: Dense laboratory PDF outputs (CBC, serum biochemistry) and handwritten prescription discharge slips.
+- **Automation**: Decouples medical jargon into plain English; maps test values to canine/feline physiological ranges; extracts daily medication routines.
+- **Guardrail**: Strictly educational explanations; never makes autonomous diagnoses.
 
-# 2. Enter the project directory
-cd nifty-alphalab
+### 2. Vet Consultation Question Generator
+- **Data Processed**: Identified abnormal biomarkers + prescribed active pharmaceutical ingredients.
+- **Automation**: Synthesizes specific, high-yield questions for the pet parent or rescuer to ask during their next clinic visit. Formats directly for WhatsApp sharing.
 
-# 3. Install dependencies
-npm install
+### 3. Smart Service Matching & Triage
+- **Data Processed**: Natural-language user search queries (e.g. *"puppy vomiting blood at 11pm"*, *"stray dog hit by car in Domlur"*).
+- **Automation**: Analyzes clinical urgency (`critical_emergency` vs `routine`), detects species, extracts symptoms, and automatically filters the directory to 24/7 ICU casualty hospitals and oxygen-equipped ambulances.
 
-# 4. Optional: configure Gemini
-cp .env.example .env.local
+### 4. Animal-Care Information Organisation
+- **Data Processed**: Messy, unstructured social media posts, WhatsApp rescuer forwards, and handwritten clinic slips.
+- **Automation**: Demonstrated via an interactive in-app modal (`AI Data Pipeline Demo`) showing how raw messages are automatically parsed into verified provider records with phone numbers, hours, and capabilities.
 
-# Add your Gemini API key to .env.local if desired:
-# GEMINI_API_KEY=your_key_here
+---
 
-# 5. Start the development server
+## 🏗️ Architecture & Technology Stack
+
+```
+[User Client / Mobile Browser]
+       │
+       ▼
+[Next.js 14 App Router + Tailwind CSS Layer]
+       │
+  ┌────┴───────────────────────────┐
+  ▼                                ▼
+[Application / API Layer]       [AI Gateway Abstraction]
+  ├─ /api/providers               ├─ Workflow 1: Report Simplifier
+  ├─ /api/ai/match                ├─ Workflow 2: Vet Question Generator
+  └─ /api/ai/simplify             ├─ Workflow 3: Smart Service Matching
+       │                          └─ Workflow 4: Info Organisation
+       ▼                                │
+[External Integrations (Future)]        ▼
+  ├─ Google Maps / Geocoding API  [Pluggable LLM Provider]
+  ├─ Google Cloud Document AI OCR ├─ Gemini 1.5 Flash (Default)
+  └─ Gupshup / WhatsApp API India └─ OpenAI GPT-4o
+```
+
+- **Frontend Framework**: Next.js 14 (App Router), React 18, TypeScript.
+- **Styling & UI**: Tailwind CSS, Lucide React icons, Glassmorphic headers.
+- **Data & State**: Zero external database friction for MVP — fast in-memory Bengaluru data store with 12 verified facilities.
+- **AI Abstraction**: `lib/ai-service.ts` encapsulates all AI logic with clean interfaces so production LLM keys (Gemini / OpenAI) can be connected with a single environment variable (`NEXT_PUBLIC_AI_PROVIDER="gemini"`).
+
+---
+
+## 🎯 MVP Thinking: 30-Day Prioritization Roadmap
+
+### What We Build First (Month 1):
+1. **Hyperlocal Location-Based Discovery**: Fast filtering of verified veterinary clinics, 24/7 emergency casualty, and shelters in Bengaluru.
+2. **One-Tap Emergency SOS Directory**: Direct telephone lines to animal ambulances and trauma units without login friction.
+3. **AI Medical Document Simplifier**: Layman explanations of CBC/renal reports and structured medication schedules.
+4. **Smart Vet Question Generator**: Actionable questions for vet visits with 1-click clipboard and WhatsApp export.
+5. **Community Rescuer Tagging**: Dedicated filters for animal welfare NGOs, subsidized care, and shelter helplines.
+
+### What We Deliberately Leave Out Initially (Post-MVP):
+- ❌ **Telemedicine Video Consultations**: Hands-on physical palpation is vital for animals who cannot speak; high clinical risk for an MVP.
+- ❌ **In-App Payment Processing**: Creates checkout friction during emergency trauma admissions.
+- ❌ **Complex Multi-Calendar Booking**: Indian veterinary clinics operate primarily on OPD walk-in surges; phone/WhatsApp confirmation is far more dependable in Phase 1.
+- ❌ **Social Media Feeds**: Distracts from solving the urgent healthcare and trauma discovery problem.
+- ❌ **Autonomous AI Clinical Diagnosis**: Strict regulatory and liability risk.
+
+---
+
+## 🚀 How to Run the Application
+
+### 1. Prerequisites
+- Node.js 18.x or later
+- npm or yarn
+
+### 2. Installation & Running
+```bash
+# Clone or navigate to the project directory
+cd /Users/prajwalvasistha/Documents/SUAZ
+
+# Start the Next.js development server
 npm run dev
-Open:
-http://localhost:3000
-Production Build
+
+# Or build and launch the production server
 npm run build
 npm run start
+```
 
-9. Limitations & Future Improvements
-Current Limitations
-Small Event Sample
-The baseline experiment produces only a small number of qualifying non-overlapping trades.
-Therefore, the observed result should be treated as exploratory evidence rather than proof of a persistent market effect.
-Fixed Time-Based Exits
-Positions are currently exited after a configured number of trading sessions.
-Volatility-adjusted stops and profit targets are not part of the baseline experiment.
-Single Market Dataset
-The current implementation focuses on NIFTY 50 historical daily data.
-Prototype Dataset
-The included dataset is intended for prototype validation rather than production-grade market research.
-Future Roadmap
-Regime Filters: Test trend conditions such as a 200-day moving-average filter.
-Dynamic Risk Management: Experiment with ATR-based stops and other exit rules.
-Holding-Period Sensitivity: Compare different holding horizons systematically.
-Threshold Sensitivity: Test whether the observed behaviour persists across different definitions of a sharp fall.
-Multi-Asset Comparison: Extend the framework to additional indices and datasets.
-Out-of-Sample Testing: Validate whether any observed pattern persists outside the initial sample period.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-10. Project Philosophy
-NIFTY AlphaLab is built around one principle:
-Build less. Think more.
-The purpose of the application is not to produce an impressive-looking trading prediction.
-It is to demonstrate a disciplined process:
-Question → Clarification → Formal Experiment → Evidence → Learning
-A useful research system should make assumptions visible, calculations reproducible, uncertainty explicit, and conclusions proportional to the evidence.
+### 3. Environment Variables (Optional)
+The prototype runs deterministically out of the box with zero required environment variables. If you wish to connect live Google Gemini or OpenAI endpoints:
+```env
+NEXT_PUBLIC_AI_PROVIDER=gemini # or "openai" or "mock"
+NEXT_PUBLIC_GEMINI_API_KEY=your_gemini_api_key_here
+```
+
+---
+
+## ⏱️ Suggested 2–3 Minute Evaluation Demo Script
+
+1. **Introduction (20s)**:
+   - Introduce **PawCare**: *"Animal healthcare in India is fragmented across WhatsApp forwards, broken Google Maps pins, and complex vet jargon. PawCare is an MVP solving discovery and health comprehension for pet parents and rescuers."*
+2. **Discovery & Smart Search (40s)**:
+   - On the Home screen, highlight the **Bengaluru Hub** selector.
+   - Click the prompt chip: *“🚨 Stray dog hit by car, bleeding heavily”*.
+   - Show how the AI immediately detects **Critical Emergency Triage** and surfaces 24/7 trauma hospitals (Cessna Lifeline) and oxygen-equipped ambulances (PawSitive Life).
+3. **Filters & Interactive Map (30s)**:
+   - Toggle **Split Map & List View** on Screen 2.
+   - Toggle **24/7 Emergency** and distance sliders to show real-time responsiveness.
+   - Click on **Cessna Lifeline** or **CARE Rescue Centre** to view the full profile on Screen 3.
+4. **Provider Details & Call/Book (20s)**:
+   - Show verified credentials, emergency contact lines, and the **Book Appointment** modal.
+   - Click **"Analyze Pet Report with AI"** from the provider profile to jump directly to Screen 4.
+5. **AI Medical Report Assistant (40s)**:
+   - Select **Sample 1: Max (Canine CBC Blood Panel)**.
+   - Watch the 4-step AI analysis pipeline.
+   - Walk through the plain-English explanation, biomarker status flags (Low Platelets 68k, High WBC), structured medication schedule, and generated vet consultation questions.
+   - Click **"WhatsApp Share"** or **"Copy All"** to demonstrate immediate real-world utility.
+6. **Strategy Memo & Conclusion (10s)**:
+   - Click **"Product & Tech Memo"** in the top navigation to show the complete 2-page screening response covering Product Concept, Flow, AI, Tech, and 30-Day MVP Thinking.
+
+---
+
+## 📋 Verification Results
+- **TypeScript**: Full static type compliance (`tsc` verification).
+- **Next.js Production Build**: `npm run build` compiled successfully (Exit code: 0).
+- **Interactive Routes**: All 4 screens and 3 API endpoints (`/api/providers`, `/api/ai/simplify`, `/api/ai/match`) tested and functional.

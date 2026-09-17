@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'NIFTY AlphaLab — AI-Native Trading Research Prototype',
+  title: 'PawCare India — Animal Care Discovery & Medical Intelligence',
   description:
-    'Structured hypothesis exploration: ASK → CLARIFY → DEFINE → TEST → LEARN for Indian equities (NIFTY 50)',
+    'Location-based veterinary discovery, 24/7 emergency casualty transit, and AI medical report simplification for pet parents and animal rescuers in Bengaluru.',
 };
 
 export default function RootLayout({
@@ -13,8 +13,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-[#090d16] text-slate-100 antialiased selection:bg-cyan-500/20 selection:text-cyan-200">
+    <html lang="en">
+      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased selection:bg-teal-100 selection:text-teal-900">
         {children}
       </body>
     </html>

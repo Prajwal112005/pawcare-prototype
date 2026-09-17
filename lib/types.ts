@@ -1,112 +1,105 @@
-export type Step = 'ASK' | 'CLARIFY' | 'DEFINE' | 'TEST' | 'LEARN';
+export type ProviderCategory = 'vet' | 'emergency' | 'ngo' | 'boarding';
 
-export interface PriceBar {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
-  changePct?: number; // Close to Close return
+export interface DoctorProfile {
+  name: string;
+  qualification: string;
+  experience: string;
+  specialization: string;
 }
 
-export type FallWindow = '1_DAY' | '3_DAYS' | '5_DAYS';
-export type EntryRule = 'NEXT_OPEN' | 'SAME_CLOSE'; // SAME_CLOSE is flagged as look-ahead bias!
-export type ExitRule = 'HOLD_DAYS_OPEN' | 'HOLD_DAYS_CLOSE';
-
-export interface UserInputAnalysis {
-  originalQuestion: string;
-  instrument: string;
-  userSpecified: {
-    instrumentDetected: string;
-    fallMagnitude?: number; // e.g. 3.0%
-    fallWindow?: FallWindow;
-    holdingDays?: number;
-    action: 'BUY' | 'SELL';
-  };
-  systemAssumptions: {
-    fallThresholdPct: number; // e.g. 3.0
-    fallWindow: FallWindow;
-    entryRule: EntryRule;
-    holdingDays: number; // e.g. 5
-    transactionCostPct: number; // e.g. 0.05%
-    slippagePct: number; // e.g. 0.05%
-    testPeriod: string; // "2018-01-01 to 2024-01-15"
-  };
-  ambiguities: {
-    key: string;
-    title: string;
-    description: string;
-    options: { label: string; value: any; isRecommended?: boolean }[];
-    selectedValue: any;
-  }[];
-}
-
-export interface ExperimentConfig {
+export interface Provider {
   id: string;
-  instrument: string;
-  conditionDescription: string;
-  fallThresholdPct: number; // e.g. 3% drop
-  fallWindowDays: number; // 1 day
-  entryRule: EntryRule;
-  exitRule: ExitRule;
-  holdingDays: number; // 5 days
-  transactionCostPct: number; // 0.05% per leg = 0.10% round trip
-  slippagePct: number; // 0.05% per leg = 0.10% round trip
-  startDate: string;
-  endDate: string;
-  hypothesis: string;
+  name: string;
+  tagline: string;
+  category: ProviderCategory;
+  isVerified: boolean;
+  rating: number;
+  reviewCount: number;
+  area: string;
+  address: string;
+  distanceKm: number;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+  isEmergency24x7: boolean;
+  isOpenNow: boolean;
+  openingHours: string;
+  phone: string;
+  ambulancePhone?: string;
+  whatsapp?: string;
+  services: string[];
+  facilities: string[];
+  doctors: DoctorProfile[];
+  about: string;
+  pricingEstimate?: string;
+  demoNotice: string;
 }
 
-export interface Trade {
-  id: number;
-  signalDate: string;
-  signalDropPct: number;
-  entryDate: string;
-  entryPrice: number;
-  exitDate: string;
-  exitPrice: number;
-  holdingDays: number;
-  grossReturnPct: number;
-  netReturnPct: number;
-  isWin: boolean;
-  notes?: string;
+export interface Biomarker {
+  name: string;
+  value: string;
+  unit: string;
+  referenceRange: string;
+  status: 'normal' | 'elevated' | 'low' | 'critical';
+  laymanMeaning: string;
 }
 
-export interface EquityPoint {
+export interface Medication {
+  name: string;
+  dosage: string;
+  frequency: string;
+  duration: string;
+  instructions: string;
+  purpose: string;
+}
+
+export interface VetQuestion {
+  id: string;
+  category: 'Medication' | 'Diagnosis' | 'Diet & Care' | 'Follow-up';
+  question: string;
+  rationale: string;
+}
+
+export interface MedicalReportAnalysis {
+  id: string;
+  title: string;
+  petName: string;
+  species: string;
+  breed: string;
+  age: string;
+  weight: string;
   date: string;
-  strategyValue: number; // Starting at 100
-  benchmarkValue: number; // Starting at 100
-  inPosition: boolean;
+  clinicName: string;
+  doctorName: string;
+  reportType: 'Complete Blood Count (CBC)' | 'Prescription & Discharge' | 'Biochemistry & Renal';
+  laymanSummary: string;
+  keyFindings: string[];
+  biomarkers: Biomarker[];
+  medications: Medication[];
+  vetRecommendations: string[];
+  warningSigns: string[];
+  questionsForVet: VetQuestion[];
 }
 
-export interface BacktestResult {
-  config: ExperimentConfig;
-  totalBars: number;
-  totalSignals: number;
-  totalTrades: number;
-  winCount: number;
-  lossCount: number;
-  winRatePct: number;
-  avgReturnPct: number;
-  medianReturnPct: number;
-  bestTradePct: number;
-  worstTradePct: number;
-  profitFactor: number;
-  strategyCumulativeReturnPct: number;
-  benchmarkCumulativeReturnPct: number;
-  maxDrawdownPct: number;
-  trades: Trade[];
-  equityCurve: EquityPoint[];
-  hasLookAheadBiasWarning: boolean;
-  lookAheadBiasExplanation?: string;
+export interface SmartMatchResult {
+  query: string;
+  urgency: 'critical_emergency' | 'urgent' | 'routine';
+  detectedCategory: ProviderCategory | 'all';
+  intentSummary: string;
+  extractedSpecies?: string;
+  extractedSymptoms?: string[];
+  recommendedProviderIds: string[];
+  guidanceNote: string;
 }
 
-export interface LearningReport {
-  dataObservations: string[];
-  systemInterpretation: string[];
-  caveats: string[];
-  conclusion: string;
-  nextInvestigations: string[];
-  isAiGenerated: boolean;
+export interface RawUnstructuredSource {
+  id: string;
+  sourceType: 'whatsapp_group' | 'instagram_rescue' | 'clinic_handwritten_slip';
+  sourceTitle: string;
+  rawText: string;
+  extractedProvider: Partial<Provider>;
+  confidenceScore: number;
 }
+
+export type ScreenType = 'home' | 'results' | 'provider' | 'ai-assistant';
